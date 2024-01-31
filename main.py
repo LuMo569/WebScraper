@@ -65,13 +65,8 @@ def main():
             if scraper.get_user_input([1, 2]) == 1:
                 print("Which file format?")
                 print("1 - .txt file")
-                while True:
-                    if scraper.get_user_input([1]) == 1:
-                        scraper.save_links(links)
-                        break
-                    else:
-                        print("Wrong selection, try again")
-
+                if scraper.get_user_input([1]) == 1:
+                    scraper.save_links(links)
         elif user_choice == 4:
             break
         else:
