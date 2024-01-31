@@ -66,32 +66,35 @@ class WebScraper:
             x = int(input())
             if x in [1, 2]:
                 return x
-            else:
-                print("wrong selection, try again")
+            print("wrong selection, try again")
 
 
-scraper = WebScraper("https://luke.molls.org/")  # change this to scrape different website
-while True:
-    print("Scraping " + scraper.url)
-    print("Possible actions:")
-    print("1 - request response")
-    print("2 - get the title")
-    print("3 - get every link")
-    print("4 - end program")
+def main():
+    scraper = WebScraper("https://luke.molls.org/")  # change this to scrape different website
+    while True:
+        print("Scraping " + scraper.url)
+        print("Possible actions:")
+        print("1 - request response")
+        print("2 - get the title")
+        print("3 - get every link")
+        print("4 - end program")
 
-    x = int(input())
+        x = int(input())
 
-    if x == 1:
-        if scraper.get_response():
-            print("request successful\n")
-        elif not scraper.get_response():
-            print("request failed\n")
-    elif x == 2:
-        scraper.get_title()
-    elif x == 3:
-        scraper.get_links()
-    elif x == 4:
-        break
-    else:
-        print("wrong selection, try again\n")
+        if x == 1:
+            if scraper.get_response():
+                print("request successful\n")
+            elif not scraper.get_response():
+                print("request failed\n")
+        elif x == 2:
+            scraper.get_title()
+        elif x == 3:
+            scraper.get_links()
+        elif x == 4:
+            break
+        else:
+            print("wrong selection, try again\n")
 
+
+if __name__ == "__main__":
+    main()
