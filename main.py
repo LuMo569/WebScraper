@@ -13,63 +13,36 @@ class WebScraper:
         self.soup = BeautifulSoup(self.response.text, "html.parser")
 
     def get_response(self):
-        # returns whether the website is responding or not
-        if self.response.status_code == 200:
-            return True
-        else:
-            return False
+
+        return self.response.status_code == 200
 
     def get_title(self):
-        # prints the text of all "h1" tags the website contains
-        headline = self.soup.find("h1").get_text()
-        print(headline + "\n")
+        return self.soup.find("h1").get_text()
 
     def get_links(self):
-        # prints the href attribute (the link) of all "a" tags the website contains
-        link_counter = 0
-        link_list = []
-        for link in self.soup.find_all("a"):
-            links = link.attrs["href"]
-            if '#' not in links:
-                link_list.append(links)
-                print(links)
-                link_counter += 1
-        print(link_counter, "links found\n")
-        print("would you like to save the found links?")
-        print("1 - yes")
-        print("2 - no")
-        x = self.get_user_input()
-        if x == 1:
-            self.save_links(link_list)
-        elif x == 2:
-            print("exiting")
-            return
+        return [link.attrs["href"] for link in self.soup.find_all("a") if '#' not in link.attrs["href"]]
 
     @staticmethod
-    def save_links(link_list):
-        print("Which file format?")
-        print("1 - .txt file")
-        while True:
-            x = int(input())
-            if x == 1:
-                with open('links.txt', 'w') as f:
-                    for link in link_list:
-                        f.write("%s\n" % link)  # puts every link in a separate line
-                print("links saved in 'links.txt'")
-                break
-            else:
-                print("wrong selection, try again")
+    def save_links(links):
+        with open('links.txt', 'w') as f:
+            for link in links:
+                f.write("%s\n" % link)  # puts every link in a separate line
+        print("links saved in 'links.txt'")
 
     @staticmethod
-    def get_user_input():
+    def get_user_input(valid_inputs):
         while True:
-            x = int(input())
-            if x in [1, 2]:
-                return x
+            user_input = int(input())
+            if user_input in valid_inputs:
+                return user_input
             print("wrong selection, try again")
 
 
 def main():
+    # changes to let user choose url:
+    # print("Please enter the URL you want to scrape:")
+    # url = input()
+    # scraper = WebScraper(url)
     scraper = WebScraper("https://luke.molls.org/")  # change this to scrape different website
     actions = {1: "Request response", 2: "Get the title", 3: "Get every link", 4: "End program"}
     while True:
@@ -77,18 +50,30 @@ def main():
         for key, value in actions.items():
             print(f"{key} - {value}")
 
-        x = int(input())
+        user_choice = scraper.get_user_input(actions.keys())
 
-        if x == 1:
-            if scraper.get_response():
-                print("request successful\n")
-            elif not scraper.get_response():
-                print("request failed\n")
-        elif x == 2:
-            scraper.get_title()
-        elif x == 3:
-            scraper.get_links()
-        elif x == 4:
+        if user_choice == 1:
+            print("request successful\n") if scraper.get_response() else print("request failed\n")
+        elif user_choice == 2:
+            print(scraper.get_title())
+        elif user_choice == 3:
+            links = scraper.get_links()
+            print("\n".join(links))
+            print(len(links), "links found")
+            print("would you like to save the found links?")
+            print("1 - yes")
+            print("2 - no")
+            if scraper.get_user_input([1, 2]) == 1:
+                print("Which file format?")
+                print("1 - .txt file")
+                while True:
+                    if scraper.get_user_input([1]) == 1:
+                        scraper.save_links(links)
+                        break
+                    else:
+                        print("Wrong selection, try again")
+
+        elif user_choice == 4:
             break
         else:
             print("wrong selection, try again\n")
