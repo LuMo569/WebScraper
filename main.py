@@ -13,7 +13,6 @@ class WebScraper:
         self.soup = BeautifulSoup(self.response.text, "html.parser")
 
     def get_response(self):
-
         return self.response.status_code == 200
 
     def get_title(self):
