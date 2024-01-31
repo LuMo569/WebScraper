@@ -5,7 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 
 
-# this class is useful to help scrape multiple websites in the future
+# this class might be helpful to scrape multiple websites in the future
 class WebScraper:
     def __init__(self, url):
         self.url = url
@@ -71,13 +71,11 @@ class WebScraper:
 
 def main():
     scraper = WebScraper("https://luke.molls.org/")  # change this to scrape different website
+    actions = {1: "Request response", 2: "Get the title", 3: "Get every link", 4: "End program"}
     while True:
         print("Scraping " + scraper.url)
-        print("Possible actions:")
-        print("1 - request response")
-        print("2 - get the title")
-        print("3 - get every link")
-        print("4 - end program")
+        for key, value in actions.items():
+            print(f"{key} - {value}")
 
         x = int(input())
 
