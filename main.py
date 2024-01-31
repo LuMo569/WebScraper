@@ -4,41 +4,75 @@
 import requests
 from bs4 import BeautifulSoup
 
-url = "https://luke.molls.org/"  # change to scrape different website
-response = requests.get(url)
-soup = BeautifulSoup(response.text, "html.parser")
-posts = soup.find_all("div", class_="post-item")
+
+# this class is useful to help scrape multiple websites in the future
+class WebScraper:
+    def __init__(self, url):
+        self.url = url
+        self.response = requests.get(url)
+        self.soup = BeautifulSoup(self.response.text, "html.parser")
+
+    def get_response(self):
+        # returns whether the website is responding or not
+        if self.response.status_code == 200:
+            return True
+        else:
+            return False
+
+    def get_title(self):
+        # prints the text of all "h1" tags the website contains
+        headline = self.soup.find("h1").get_text()
+        print(headline + "\n")
+
+    def get_links(self):
+        # prints the href attribute (the link) of all "a" tags the website contains
+        link_counter = 0
+        link_list = []
+        for link in self.soup.find_all("a"):
+            links = link.attrs["href"]
+            if '#' not in links:
+                link_list.append(links)
+                print(links)
+                link_counter += 1
+        print(link_counter, "links found\n")
+        print("would you like to save the found links?")
+        print("1 - yes")
+        print("2 - no")
+        x = self.get_user_input()
+        if x == 1:
+            self.save_links(link_list)
+        elif x == 2:
+            print("exiting")
+            return
+
+    @staticmethod
+    def save_links(link_list):
+        print("Which file format?")
+        print("1 - .txt file")
+        while True:
+            x = int(input())
+            if x == 1:
+                with open('links.txt', 'w') as f:
+                    for link in link_list:
+                        f.write("%s\n" % link)  # puts every link in a separate line
+                print("links saved in 'links.txt'")
+                break
+            else:
+                print("wrong selection, try again")
+
+    @staticmethod
+    def get_user_input():
+        while True:
+            x = int(input())
+            if x in [1, 2]:
+                return x
+            else:
+                print("wrong selection, try again")
 
 
-def getresponse():
-    # returns whether the website is responding or not
-    if response.status_code == 200:
-        return True
-    else:
-        return False
-
-
-def gettitle():
-    # prints the text of all "h1" tags the website contains
-    headline = soup.find("h1").get_text()
-    print(headline + "\n")
-
-
-def getlinks():
-    # prints the href attribute (the link) of all "a" tags the website contains
-    link_counter = 0
-    for link in soup.find_all("a"):
-        links = link.attrs["href"]
-        if '#' not in links:
-            print(links)
-            link_counter += 1
-    print(link_counter, "links found")
-    print("\n")
-
-
+scraper = WebScraper("https://luke.molls.org/")  # change this to scrape different website
 while True:
-
-    print("Scraping " + url)
+    print("Scraping " + scraper.url)
     print("Possible actions:")
     print("1 - request response")
     print("2 - get the title")
@@ -48,14 +82,14 @@ while True:
     x = int(input())
 
     if x == 1:
-        if getresponse():
+        if scraper.get_response():
             print("request successful\n")
-        elif not getresponse():
+        elif not scraper.get_response():
             print("request failed\n")
     elif x == 2:
-        gettitle()
+        scraper.get_title()
     elif x == 3:
-        getlinks()
+        scraper.get_links()
     elif x == 4:
         break
     else:
